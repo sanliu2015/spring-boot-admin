@@ -67,6 +67,9 @@ Spring Boot Admin will detect everything that looks like an URL and render it as
 ANSI color-escapes are also supported.
 You need to set a custom file log pattern as Spring Boot's default one doesn't use colors.
 
+To enforce the use of ANSI-colored output, set `spring.output.ansi.enabled=ALWAYS`.
+Otherwise Spring tries to detect if ANSI-colored output is available and might disable it.
+
 .application.properties
 ----
 logging.file.name=/var/log/sample-boot-application.log <1>
@@ -173,9 +176,14 @@ spring.boot.admin.client.password
 | Name to register with.
 | `${spring.application.name}` if set, `"spring-boot-application"` otherwise.
 
-| spring.boot.admin.client.instance.prefer-ip
-| Use the ip-address rather then the hostname in the guessed urls. If `server.address` / `management.address` is set, it get used. Otherwise the IP address returned from `InetAddress.getLocalHost()` gets used.
-| `false`
+| spring.boot.admin.client.instance.service-host-type
+| Select which information should be considered when sending the host of a service: +
+    * `IP`: Uses the IP returned by `InetAddress.getHostAddress()` +
+    * `HOST_NAME`: Uses the host name of a single machine returned by `InetAddress.getHostName()` +
+    * `CANONICAL_HOST_NAME`: Uses the FQDN returned by `InetAddress.geCanonicalHostName()` +
+    If `server.address` or `management.address` is set in the service, the value will overrule this property.
+| `CANONICAL_HOST_NAME`
+
 
 | spring.boot.admin.client.instance.metadata.*
 | Metadata key-value-pairs to be associated with this instance.
