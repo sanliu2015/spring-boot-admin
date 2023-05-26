@@ -1,13 +1,13 @@
 import { isEmpty, merge } from 'lodash-es';
 import { createI18n } from 'vue-i18n';
 
-import sbaConfig from '../sba-config';
+import sbaConfig from '@/sba-config';
 
 const context = import.meta.globEager('../**/(*.)?i18n.*.json');
 const messages = Object.keys(context)
   .map((key) => {
     const localeFromFile = /\.*i18n\.?([^/]*)\.json$/.exec(key);
-    const messages = context[key].default;
+    const messages = (context[key] as { default: never }).default;
     if (localeFromFile[1]) {
       return {
         [localeFromFile[1]]: messages,
@@ -18,10 +18,8 @@ const messages = Object.keys(context)
   })
   .reduce((prev, cur) => merge(prev, cur), {});
 
-export const AVAILABLE_LANGUAGES = getAvailableLocales();
-
-function getAvailableLocales() {
-  let valueFromServer = sbaConfig.uiSettings.availableLanguages;
+export function getAvailableLocales() {
+  const valueFromServer = sbaConfig.uiSettings.availableLanguages;
 
   const strings = Object.keys(messages);
   return isEmpty(valueFromServer)
@@ -35,7 +33,7 @@ if (!browserLanguage.includes('zh')) {
 }
 
 const i18n = createI18n({
-  locale: AVAILABLE_LANGUAGES.includes(browserLanguage)
+  locale: getAvailableLocales().includes(browserLanguage)
     ? browserLanguage
     : 'en',
   fallbackLocale: 'en',
