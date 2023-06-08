@@ -101,9 +101,17 @@ import prettyBytes from 'pretty-bytes';
 import { debounceTime, fromEvent } from 'rxjs';
 
 import subscribing from '@/mixins/subscribing';
+import sbaConfig from '@/sba-config';
 import Instance from '@/services/instance';
 import autolink from '@/utils/autolink';
-import { animationFrameScheduler, concatAll, concatMap, map, of, tap } from '@/utils/rxjs';
+import {
+  animationFrameScheduler,
+  concatAll,
+  concatMap,
+  map,
+  of,
+  tap,
+} from '@/utils/rxjs';
 import { VIEW_GROUP } from '@/views/ViewGroup';
 import SbaInstanceSection from '@/views/instances/shell/sba-instance-section';
 
@@ -162,7 +170,7 @@ export default {
     createSubscription() {
       this.error = null;
       return this.instance
-        .streamLogfile(1000)
+        .streamLogfile(sbaConfig.uiSettings.pollTimer.logfile)
         .pipe(
           tap(
             (part) => (this.skippedBytes = this.skippedBytes || part.skipped)
